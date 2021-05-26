@@ -1,0 +1,56 @@
+_schema-version: "3.2"
+ID: employee_management
+version: 0.0.1
+modules:
+- name: employee-management-approuter
+  type: approuter.nodejs
+  path: employee-management-approuter
+  requires:
+  - name: employee_management_html_repo_runtime
+  - name: dest_employee_management
+  parameters:
+    disk-quota: 256M
+    memory: 256M
+- name: employee_management_ui_deployer
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: employee_management_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - management-content.zip
+      name: management
+      target-path: resources/
+- name: management
+  type: html5
+  path: management
+  build-parameters:
+    builder: custom
+    commands:
+    - npm run build
+    supported-platforms: []
+resources:
+- name: employee_management_html_repo_runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-runtime
+- name: employee_management_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+- name: dest_employee_management
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: destination
+    service-plan: lite
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm install

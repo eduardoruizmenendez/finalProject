@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run employee_management-management",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/employee-management-approuter/node_modules/@sap/html5-repo-mock/index.js",
+      "args": [
+        "--standalone",
+        "/emp_mgmtmanagement/index.html",
+        "--ui5",
+        "{\"version\":\".\"}"
+      ],
+      "cwd": "${workspaceFolder}/management",
+      "env": {
+        "PORT": "6004",
+        "MOCK_LOOKUP_DIRS": "[\"webapp\"]",
+        "run.config": "{\"handlerId\":\"ui5_run_config_handler_id\",\"runnableId\":\"/home/user/projects/employee_management/management\"}"
+      },
+      "envFile": "${workspaceFolder}/management/.env1",
+      "preLaunchTask": "Build employee_management"
+    }
+  ]
+}

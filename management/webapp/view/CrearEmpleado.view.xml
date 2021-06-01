@@ -1,0 +1,167 @@
+<mvc:View controllerName="emp_mgmt.management.controller.CrearEmpleado" 
+          xmlns:mvc="sap.ui.core.mvc" 
+          xmlns:form="sap.ui.layout.form"
+          xmlns:core="sap.ui.core"
+          xmlns="sap.m">
+
+    <Page title="{i18n>crearEmpleado}">
+        <NavContainer id="wizardNavContainer">
+            <pages>
+                <Page id="wizardContentPage"
+                    showHeader="false">
+                    <content>
+                        <Wizard id="wizard" complete="onWizardComplete">
+                            <WizardStep id="stepTipoEmpleado" title="{i18n>tipoEmpleado}" validated="false">
+                                <MessageStrip class="sapUiSmallMarginBottom"
+                                            text="{i18n>tipoEmpleadoMensaje}"
+                                            showIcon="true"/>
+                                <HBox justifyContent="Center"
+                                    alignContent="Center">
+                                    <Button id="botonTipoInterno"
+                                            text="{i18n>botonTipoInterno}"
+                                            press="onTipoEmpleadoPulsado"
+                                            class="sapUiSmallMarginEnd"  />
+                                    <Button id="botonTipoAutonomo"
+                                            text="{i18n>botonTipoAutonomo}"
+                                            press="onTipoEmpleadoPulsado"
+                                            class="sapUiSmallMarginEnd"  /> 
+                                    <Button id="botonTipoGerente"
+                                            text="{i18n>botonTipoGerente}"
+                                            press="onTipoEmpleadoPulsado"
+                                            class="sapUiSmallMarginEnd"  />
+                                </HBox>
+                            </WizardStep>
+                            <WizardStep id="stepDatosEmpleado" 
+                                        title="{i18n>datosEmpleado}" 
+                                        validated="false"
+                                        activate="validacionDatosEmpleado">
+                                <MessageStrip class="sapUiSmallMarginBottom"
+                                            text="{i18n>datosEmpleadoMensaje}"
+                                            showIcon="true"/>
+                                <form:SimpleForm editable="true">
+                                    <Label  text="{i18n>nombre}" 
+                                            required="true"
+                                            labelFor="NombreEmpleado"/>
+                                    <Input  valueState="{= ${/NombreEmpleado} === ''? 'Error' : 'None'}" 
+                                            id="NombreEmpleado" 
+                                            value="{/NombreEmpleado}"/>
+                                            
+                                    <Label  text="{i18n>apellidos}" 
+                                            required="true"
+                                            labelFor="ApellidosEmpleado"/>
+                                    <Input  valueState="{= ${/ApellidosEmpleado} === ''? 'Error' : 'None'}" 
+                                            id="ApellidosEmpleado" 
+                                            value="{/ApellidosEmpleado}"/>
+
+                                    <Label  text="{i18n>dni}" 
+                                            required="true" 
+                                            labelFor="DNIEmpleado"
+                                            visible="{= ${/TipoEmpleado}===0 || ${/TipoEmpleado}===2 ? true : false }" />
+                                    <Input  valueStateText="{i18n>valueStateDNI}"
+                                            id="DNIEmpleado" 
+                                            liveChange="validacionDNI"
+                                            value="{/DNIEmpleado}"
+                                            visible="{= ${/TipoEmpleado}===0 || ${/TipoEmpleado}===2 ? true : false }"/>
+
+                                    <Label  text="{i18n>cif}" 
+                                            required="true" 
+                                            labelFor="CIFEmpleado"
+                                            visible="{= ${/TipoEmpleado}===1 ? true : false }"/>
+                                    <Input  valueState="{= ${/CIFEmpleado} === ''? 'Error': 'None'}" 
+                                            id="CIFEmpleado" 
+                                            liveChange="validacionDatosEmpleado"
+                                            value="{/CIFEmpleado}"
+                                            visible="{= ${/TipoEmpleado}===1 ? true : false }"/>
+
+                                    <Label  text="{i18n>salarioBrutoAnual}" 
+                                            labelFor="salario"
+                                            visible="{= ${/TipoEmpleado}===0 || ${/TipoEmpleado}===2 ? true : false }"/>
+                                    <Slider id="salario"
+                                            enableTickmarks="true" 
+                                            min="{/SalarioMin}" 
+                                            max="{/SalarioMax}" 
+                                            value="{/SalarioBruto}" 
+                                            class="sapUiMediumMarginBottom" 
+                                            width="100%"
+                                            step="100"
+                                            visible="{= ${/TipoEmpleado}===0 || ${/TipoEmpleado}===2 ? true : false }"/>
+
+                                    <Label  text="{i18n>precioDiario}" 
+                                            labelFor="precio"
+                                            visible="{= ${/TipoEmpleado}===1 ? true : false }"/>
+                                    <Slider id="precio"
+                                            enableTickmarks="true" 
+                                            min="{/SalarioMin}" 
+                                            max="{/SalarioMax}" 
+                                            value="{/SalarioBruto}" 
+                                            class="sapUiMediumMarginBottom" 
+                                            width="100%"
+                                            step="20"
+                                            visible="{= ${/TipoEmpleado}===1 ? true : false }"/>
+
+                                    <Label  text="{i18n>fechaIncorporacion}" 
+                                            required="true"
+                                            labelFor="fechaIncorporacion" />
+                                    <DatePicker  id="fechaIncorporacion"
+                                                valueState="{= ${/FechaIncorporacion} === ''? 'Error': 'None'}" 
+                                                value="{
+				                                    path: '/FechaIncorporacion',
+				                                    type: 'sap.ui.model.type.Date',
+				                                    formatOptions: {
+					                                    style: 'medium'
+				                                    }
+	                                            }"
+                                                change="validacionDatosEmpleado"
+                                                class="sapUiSmallMarginBottom"/>      
+
+                                </form:SimpleForm>
+                            </WizardStep>
+                            <WizardStep id="stepInformacionAdicional" 
+                                        title="{i18n>infoAdicional}" 
+                                        validated="true">
+                                <MessageStrip class="sapUiSmallMarginBottom"
+                                            text="{i18n>infoAdicionalMensaje}"
+                                            showIcon="true"/>
+                                <Label labelFor="comentario"
+                                    text="{i18n>comentario}"/>
+                                <TextArea id="comentario"
+                                        value="{/Comentario}"
+                                        width="100%"/>
+                                <UploadCollection id="anexos"
+                                                maximumFileSize="10"
+                                                maximumFilenameLength="55"
+                                                multiple="true"
+                                                sameFilenameAllowed="true"
+                                                instantUpload="false"
+                                                uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
+                                                change="onAnexosChange"
+                                                beforeUploadStarts="onAnexosBeforeUploadStart" >
+                                </UploadCollection>
+                            </WizardStep>
+                        </Wizard>
+                    </content>
+                <footer>
+					<OverflowToolbar>
+					    <ToolbarSpacer/>
+							<Button text="{i18n>cancel}" press="onCancelarWizard"/>
+						</OverflowToolbar>
+					</footer>
+				</Page>
+				<Page id="revisionWizard" showHeader="false">
+					<content>
+						<core:Fragment fragmentName="emp_mgmt.management.fragment.DatosEmpleado" type="XML"/>
+					</content>
+					<footer>
+						<Bar>
+							<contentRight>
+								<Button text="{i18n>guardar}" press="onGuardar"/>
+								<Button text="{i18n>cancel}" press="onCancelar"/>
+							</contentRight>
+						</Bar>
+					</footer>
+				</Page>
+            </pages>
+        </NavContainer>
+    </Page>
+
+</mvc:View>

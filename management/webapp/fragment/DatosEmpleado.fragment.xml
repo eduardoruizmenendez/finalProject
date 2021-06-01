@@ -1,0 +1,67 @@
+<core:FragmentDefinition 
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc" 
+    xmlns:form="sap.ui.layout.form"
+    xmlns="sap.m">
+
+    <form:SimpleForm
+				title="1. {i18n>tipoEmpleado}"
+				editable="false"
+				layout="ResponsiveGridLayout">
+			<form:content>
+				<Label text="{i18n>tipo}"/>
+				<Text text="{= ${/TipoEmpleado} === '0' ? ${i18n>botonTipoInterno} : ${/TipoEmpleado} === '1' ? ${i18n>botonTipoAutonomo} : ${i18n>botonTipoGerente}}"/>
+				<Link press="goToTipoEmpleado" text="{i18n>editar}" />
+			</form:content>
+		</form:SimpleForm>
+		
+		<form:SimpleForm
+				title="2. {i18n>datosEmpleado}"
+				editable="false"
+				layout="ResponsiveGridLayout">
+			<form:content>
+				<Label text="{i18n>nombre}"/>
+				<Text text="{/NombreEmpleado}"/>
+				<Label text="{i18n>apellidos}"/>
+				<Text text="{/ApellidosEmpleado}"/>
+				<Label text="{i18n>dni}"
+                       visible="{= ${/TipoEmpleado} !== '1' ? true : false}"/>
+				<Text  text="{/DNIEmpleado}"
+                       visible="{= ${/TipoEmpleado} !== '1' ? true : false}"/>
+                <Label text="{i18n>cif}"
+                       visible="{= ${/TipoEmpleado} === '1' ? true : false}"/>
+				<Text  text="{/CIFEmpleado}"
+                       visible="{= ${/TipoEmpleado} === '1' ? true : false}"/>
+				<Label text="{i18n>salarioBrutoAnual}"
+                       visible="{= ${/TipoEmpleado} !== '1' ? true : false}"/>
+                <Label text="{i18n>precioDiario}"
+                       visible="{= ${/TipoEmpleado} === '1' ? true : false}"/>
+				<Text  text="{/SalarioBruto}"/>
+				<Label text="{i18n>fechaIncorporacion}"/>
+				<Text  text="{path:'/FechaIncorporacion',type:'sap.ui.model.type.Date'}"/>
+				<Link press="goToDatosEmpleado" text="{i18n>editar}" />
+			</form:content>
+		</form:SimpleForm>
+		
+		<form:SimpleForm
+				title="3. {i18n>infoAdicional}"
+				editable="false"
+				layout="ResponsiveGridLayout">
+			<form:content>
+				<Label text="{i18n>comentario}"/>
+				<TextArea value="{/Comentario}"
+                          enabled="false"/>
+				<Label text="{i18n>documentos}"/>
+				<Text text="{/ContadorAnexos} {i18n>ficheros}" 
+                      class="sapUiMediumMarginBottom"/>
+
+				<List items="{/Anexos}">
+					<items>
+						<StandardListItem title="{DocName}"></StandardListItem>
+					</items>
+				</List>
+				<Link press="goToInfoAdicional" text="{i18n>editar}" />
+			</form:content>
+		</form:SimpleForm>
+
+</core:FragmentDefinition>

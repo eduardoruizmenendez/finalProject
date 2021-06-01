@@ -1,11 +1,47 @@
-<mvc:View controllerName="emp_mgmt.management.controller.Main" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
-	<Shell id="shell">
-		<App id="app">
-			<pages>
-				<Page id="page" title="{i18n>title}">
-					<content></content>
-				</Page>
-			</pages>
-		</App>
-	</Shell>
+<mvc:View controllerName="emp_mgmt.management.controller.Main" 
+          xmlns:mvc="sap.ui.core.mvc" 
+          displayBlock="true" 
+          xmlns="sap.m">
+
+    <Page   id="page" 
+            title="{i18n>menu}">
+
+		<content>
+
+			<Panel  headerText="{i18n>empleados}" 
+                    expandable="true"
+                    expanded="true">
+
+				<GenericTile id="tileCrearEmpleado" 
+                             headerImage="sap-icon://add-employee" 
+                             press="onPressCrearEmpleado"
+                             class="sapUiTinyMarginEnd">
+					<TileContent footer="{i18n>crearEmpleado}"/>
+				</GenericTile>
+
+				<GenericTile id="tileVerEmpleados" 
+                             headerImage="sap-icon://employee-lookup" 
+                             press="onPressVerEmpleados">
+					<TileContent footer="{i18n>verEmpleados}"/>
+				</GenericTile>
+
+			</Panel>
+
+
+			<Panel  headerText="{i18n>pedidos}"  
+                    expandable="true"
+                    expanded="true">
+
+				<GenericTile id="tileFirmarPedido"  
+                             headerImage="sap-icon://signature" 
+                             press="onPressTileFirmarPedido">
+					<TileContent footer="{i18n>firmarPedido}"/>
+				</GenericTile>
+
+			</Panel>
+
+		</content>
+
+	</Page>
+    
 </mvc:View>

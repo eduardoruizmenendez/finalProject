@@ -21,6 +21,7 @@ sap.ui.define([
                 this._oNavContainer = this.getView().byId("wizardNavContainer");
                 this._oWizardContentPage = this.byId("wizardContentPage")
                 this.model = new JSONModel();
+                this.newUserId = "";
                 this.getView().setModel(this.model);
                 this._clear();
             },
@@ -135,7 +136,20 @@ sap.ui.define([
 
             onWizardComplete: function () {
                 let oUploadCollection = this.getView().byId("anexos");
-                this.model.setProperty("/ContadorAnexos", oUploadCollection.getItems().length);
+                let aFiles = oUploadCollection.getItems();
+                this.model.setProperty("/ContadorAnexos", aFiles.length);
+                if (aFiles.length > 0) {
+                    var aFileInfo = [];
+                    for (var i in aFiles) {
+                        aFileInfo.push({
+                            Name :     aFiles[i].getFileName(),
+                            MimeType : aFiles[i].getMimeType()
+                        });
+                    };
+                    this.model.setProperty("/AnexosInfo", aFileInfo);
+                } else {
+                    this.model.setProperty("/AnexosInfo", []);
+                }
                 this._oNavContainer.to(this.byId("revisionWizard"));
             },
 
@@ -144,8 +158,7 @@ sap.ui.define([
                     onClose: function (oAction) {
                         if (oAction === "OK") {
                             this._clear();
-                            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                            oRouter.navTo("RouteMain", {}, true);
+                            this._navToMenu();
                         }
                     }.bind(this)
                 });
@@ -160,28 +173,49 @@ sap.ui.define([
             },
 
             goToInfoAdicional: function () {
-                this._handleNavigationToStep(2);
+                this._handleNavigat0ionToStep(2);
             },
 
             onGuardar: function () {
-                let sDni = this.model.getProperty("DNIEmpleado");
-                if(sDni === undefined || sDni === ""){
-                    sDni = this.model.getProperty("CIFEmpleado");
+                let oI18n = this.getView().getModel("i18n").getResourceBundle();
+                let oDatosEmpleado = this.model.getData();
+                let sDni = oDatosEmpleado.DNIEmpleado;
+                if (sDni === undefined || sDni === "") {
+                    sDni = oDatosEmpleado.CIFEmpleado;
                 }
-                
+
                 let body = {
-                    "SapId" : this.getOwnerComponent().SapId,
-                    "Type" : this.model.getProperty("/TipoEmpleado"),
-                    "FirstName" : this.model.getProperty("/NombreEmpleado"),
-                    "LastName" : this.model.getProperty("/ApellidosEmpleado"),
-                    "Dni" : sDni,
-                    "CreationDate" : this.model.getProperty("/FechaIncorporacion"),
-                    "UserToSalary": {
-                        Ammount : parseFloat(this.model.getProperty("/SalarioBruto")).toString(),
-			            Comments : this.model.getProperty("/Comentario"),
-			            Waers : "EUR"
-                    }
-                }
+                    "SapId": this.getOwnerComponent().sapId,
+                    "Type": this.model.getProperty("/TipoEmpleado").toString(),
+                    "FirstName": this.model.getProperty("/NombreEmpleado"),
+                    "LastName": this.model.getProperty("/ApellidosEmpleado"),
+                    "Dni": sDni,
+                    "CreationDate": this.model.getProperty("/FechaIncorporacion"),
+                    "UserToSalary": [{
+                        "Ammount": parseFloat(this.model.getProperty("/SalarioBruto")).toString(),
+                        "Comments": this.model.getProperty("/Comentario"),
+                        "Waers": "EUR"
+                    }]
+                };
+                this.getView().getModel("oData").create("/Users",body,{
+			        success : function(data){
+                        let IdEmpleado = data.EmployeeId;
+                        this.model.setProperty("/NumEmpleado", IdEmpleado);
+                        this.newUserId = IdEmpleado;
+                        sap.m.MessageBox.success(oI18n.getText("empleadoCreado", [IdEmpleado]), {
+                            onClose: function(){
+                                this._oNavContainer.back();
+                                this._navToMenu();
+                            }.bind(this)
+                        });
+
+                        this._uploadFiles();
+                        
+                    }.bind(this),
+                    error: function(data){
+                        sap.m.MessageBox.error(oI18n.getText("errorCreandoEmpleado"));
+                    }.bind(this)
+                });
             },
 
             onCancelar: function () {
@@ -251,6 +285,7 @@ sap.ui.define([
                     this._wizard.discardProgress(pasoTipoEmpleado);
                     pasoTipoEmpleado.setValidated(false);
                 }
+                this.model.setProperty("/NumEmpleado", "");
                 this.model.setProperty("/TipoEmpleado", "");
                 this.model.setProperty("/NombreEmpleado", "");
                 this.model.setProperty("/ApellidosEmpleado", "");
@@ -261,7 +296,17 @@ sap.ui.define([
                 this.model.setProperty("/SalarioBruto", 0);
                 this.model.setProperty("/FechaIncorporacion", new Date());
                 this.model.setProperty("/Comentario", "");
+                this.model.setProperty("/AnexosInfo", []);
+                this.model.setProperty("/ContadorAnexos", 0);
+            },
 
+            _navToMenu: function(){
+                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                oRouter.navTo("RouteMain", {}, true);
+            },
+
+            _uploadFiles: function(){
+                this.getView().byId("anexos").upload();
             }
         });
     });

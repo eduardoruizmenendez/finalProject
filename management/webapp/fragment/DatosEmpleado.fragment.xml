@@ -10,7 +10,7 @@
 				layout="ResponsiveGridLayout">
 			<form:content>
 				<Label text="{i18n>tipo}"/>
-				<Text text="{= ${/TipoEmpleado} === '0' ? ${i18n>botonTipoInterno} : ${/TipoEmpleado} === '1' ? ${i18n>botonTipoAutonomo} : ${i18n>botonTipoGerente}}"/>
+				<Text text="{= ${/TipoEmpleado} === 0 ? ${i18n>botonTipoInterno} : ${/TipoEmpleado} === 1 ? ${i18n>botonTipoAutonomo} : ${i18n>botonTipoGerente}}"/>
 				<Link press="goToTipoEmpleado" text="{i18n>editar}" />
 			</form:content>
 		</form:SimpleForm>
@@ -22,23 +22,22 @@
 			<form:content>
 				<Label text="{i18n>nombre}"/>
 				<Text text="{/NombreEmpleado}"/>
+
 				<Label text="{i18n>apellidos}"/>
 				<Text text="{/ApellidosEmpleado}"/>
-				<Label text="{i18n>dni}"
-                       visible="{= ${/TipoEmpleado} !== '1' ? true : false}"/>
-				<Text  text="{/DNIEmpleado}"
-                       visible="{= ${/TipoEmpleado} !== '1' ? true : false}"/>
-                <Label text="{i18n>cif}"
-                       visible="{= ${/TipoEmpleado} === '1' ? true : false}"/>
-				<Text  text="{/CIFEmpleado}"
-                       visible="{= ${/TipoEmpleado} === '1' ? true : false}"/>
+
+				<Label text="{= ${/TipoEmpleado} !== 1 ? '{i18n>dni}' : '{i18n>cif}' }"/>
+				<Text  text="{= ${/TipoEmpleado} !== 1 ? '{/DNIEmpleado}' : '{/CIFEmpleado}'}"/>
+
 				<Label text="{i18n>salarioBrutoAnual}"
-                       visible="{= ${/TipoEmpleado} !== '1' ? true : false}"/>
+                       visible="{= ${/TipoEmpleado} !== 1 ? true : false}"/>
                 <Label text="{i18n>precioDiario}"
-                       visible="{= ${/TipoEmpleado} === '1' ? true : false}"/>
+                       visible="{= ${/TipoEmpleado} === 1 ? true : false}"/>
 				<Text  text="{/SalarioBruto}"/>
+
 				<Label text="{i18n>fechaIncorporacion}"/>
 				<Text  text="{path:'/FechaIncorporacion',type:'sap.ui.model.type.Date'}"/>
+
 				<Link press="goToDatosEmpleado" text="{i18n>editar}" />
 			</form:content>
 		</form:SimpleForm>
@@ -48,18 +47,26 @@
 				editable="false"
 				layout="ResponsiveGridLayout">
 			<form:content>
-				<Label text="{i18n>comentario}"/>
-				<TextArea value="{/Comentario}"
-                          enabled="false"/>
-				<Label text="{i18n>documentos}"/>
-				<Text text="{/ContadorAnexos} {i18n>ficheros}" 
-                      class="sapUiMediumMarginBottom"/>
-
-				<List items="{/Anexos}">
-					<items>
-						<StandardListItem title="{DocName}"></StandardListItem>
-					</items>
-				</List>
+                <VBox >
+                    <HBox width="60%">
+                        <Label text="{i18n>comentario}:" class="sapUiMediumMarginEnd" />
+                        <TextArea value="{/Comentario}"
+                                  enabled="false"
+                                  width="100%"/>
+                    </HBox>
+                    <HBox width="60%">
+                        <Label text="{i18n>documentos}:" class="sapUiMediumMarginEnd"/>
+                        <Text text="{/ContadorAnexos} ({i18n>ficheros})" 
+                            class="sapUiSmallMarginBottom"/>
+                    </HBox>
+                    <HBox width="60%">
+                        <List items="{/AnexosInfo}">
+                            <items>
+                                <StandardListItem title="{Name}"></StandardListItem>
+                            </items>
+                        </List>
+                    </HBox>
+                </VBox>
 				<Link press="goToInfoAdicional" text="{i18n>editar}" />
 			</form:content>
 		</form:SimpleForm>

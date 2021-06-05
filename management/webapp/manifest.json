@@ -110,6 +110,13 @@
                     "target": [
                         "CrearEmpleado"
                     ]
+                },
+                {
+                    "name": "VisualizarEmpleado",
+                    "pattern": "VisualizarEmpleado",
+                    "target": [
+                        "TargetVisualizar"
+                    ]
                 }
             ],
             "targets": {
@@ -124,6 +131,13 @@
                     "viewType": "XML",
                     "viewName": "CrearEmpleado",
                     "viewId": "CrearEmpleado",
+                    "clearControlAggregation": true,
+                    "transition": "slide"
+                },
+                "TargetVisualizar": {
+                    "viewType": "XML",
+                    "viewName": "VisualizarEmpleado",
+                    "viewId": "VisualizarEmpleado",
                     "clearControlAggregation": true,
                     "transition": "slide"
                 }

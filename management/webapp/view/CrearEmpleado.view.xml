@@ -135,7 +135,8 @@
                                                 instantUpload="false"
                                                 uploadUrl="/sap/opu/odata/sap/ZEMPLOYEES_SRV/Attachments"
                                                 change="onAnexosChange"
-                                                beforeUploadStarts="onAnexosBeforeUploadStart" >
+                                                beforeUploadStarts="onAnexosBeforeUploadStart"
+                                                noDataText="{i18n>arrastrarFicheros}" >
                                 </UploadCollection>
                             </WizardStep>
                         </Wizard>

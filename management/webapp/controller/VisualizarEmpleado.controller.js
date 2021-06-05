@@ -1,7 +1,10 @@
+// @ts-nocheck
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/core/routing/History",
-    "sap/m/MessageToast"
+    "sap/m/MessageToast",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator"
 ],
 
     /**
@@ -9,9 +12,11 @@ sap.ui.define([
      * @param {typeof sap.ui.core.mvc.Controller} Controller 
      * @param {typeof sap.ui.core.routing.History} History 
      * @param {typeof sap.m.MessageToast} MessageToast 
+     * @param {typeof sap.ui.model.Filter} Filter
+     * @param {typeof sap.ui.model.FilterOperator} FilterOperator
      */
 
-    function (Controller, History, MessageToast) {
+    function (Controller, History, MessageToast, Filter, FilterOperator) {
         "use strict";
 
         function onInit() {
@@ -31,8 +36,21 @@ sap.ui.define([
             oRouter.navTo("RouteMain", {}, true);
         };
 
-        function onBuscarEmpleado() {
+        function onBuscarEmpleado(oEvent) {
 
+            //Filtro sobre el apellido del empleado
+            const arrayFilter = [];
+            const sQuery = oEvent.oSource.getValue();
+
+            //Construcción del filtro
+            if(sQuery){
+                arrayFilter.push( new Filter("LastName", FilterOperator.Contains, sQuery));
+            };
+
+            const oList = this.getView().byId("listaEmpleados");
+            const oBinding = oList.getBinding("items");
+            //Se aplica el filtro
+            oBinding.filter(arrayFilter);
         };
 
         function onVisualizarEmpleado(oEvent) {
@@ -40,35 +58,12 @@ sap.ui.define([
             this._split.to(this.createId("datosEmpleado"));
             //Obtenemos el empleado sobre el que se ha lanzado el evento a partir de la lista
             let context = oEvent.getParameter("listItem").getBindingContext("oData");
-            //Gauardamos el EmployeeId para usarlo fácilmente en varios puntos del proceso
+            //Guardamos el EmployeeId para usarlo fácilmente en varios puntos del proceso
             this._employeeId = context.getProperty("EmployeeId");
             let datosEmpleado = this.byId("datosEmpleado");
             //Vinculamos los datos del modelo oData para el empleado
             datosEmpleado.bindElement("oData>/Users(EmployeeId='" + this._employeeId + "',SapId='" + this._sapId + "')");
 
-        };
-
-        function onDarDeBaja(oEvent) {
-            //Confirmación para borrar
-            sap.m.MessageBox.confirm(this._i18n.getText("confirmacionDarDeBaja"), {
-                title: this._i18n.getText("confirmar"),
-                onClose: function (oAction) {
-                    if (oAction === "OK") {
-                        //REMOVE /Users
-                        this.getView().getModel("oData").remove("/Users(EmployeeId='" + this._employeeId + "',SapId='" + this._sapId + "')", {
-                            success: function (data) {
-                                //Muestro mensaje de éxito
-                                MessageToast.show(this._i18n.getText("empleadoEliminado"));
-                                //Vacio la ventana de detalle
-                                this._split.to(this.createId("seleccioneEmpleado"));
-                            }.bind(this),
-                            error: function (e) {
-                                console.error(e);
-                            }.bind(this)
-                        });
-                    }
-                }.bind(this)
-            });
         };
 
         function onAscender(oEvent) {
@@ -86,7 +81,7 @@ sap.ui.define([
         };
 
         function onCancelarAscenso() {
-            this._dialogoAscenso.close();
+            this._cerrarVentanaAscenso();
         };
 
         function onAceptarAscenso(oEvent) {
@@ -105,8 +100,8 @@ sap.ui.define([
                 success: function () {
                     MessageToast.show(this._i18n.getText("ascensoOK"));
                     this.getView().getModel("oData").refresh();
-                    this.onCancelarAscenso();
-                    
+                    //Cerrar la ventana de ascenso
+                    this._cerrarVentanaAscenso();
                 }.bind(this),
                 error: function (e) {
                     MessageToast.show(this._i18n.getText("ascensoKO"));
@@ -155,13 +150,50 @@ sap.ui.define([
                     console.error(e);
                 }
             });
-        }
+        };
 
         function descargaFichero(oEvent) {
             //Abrimos el documento en una nueva ventana para poder descargarlo
             var sPath = oEvent.getSource().getBindingContext("oData").getPath();
             window.open("/sap/opu/odata/sap/ZEMPLOYEES_SRV" + sPath + "/$value");
-        }
+        };
+
+        function onDarDeBaja(oEvent) {
+            //Confirmación para borrar
+            sap.m.MessageBox.confirm(this._i18n.getText("confirmacionDarDeBaja"), {
+                title: this._i18n.getText("confirmar"),
+                onClose: function (oAction) {
+                    if (oAction === "OK") {
+                        //REMOVE /Users
+                        this.getView().getModel("oData").remove("/Users(EmployeeId='" + this._employeeId + "',SapId='" + this._sapId + "')", {
+                            success: function (data) {
+                                //Muestro mensaje de éxito
+                                MessageToast.show(this._i18n.getText("empleadoEliminado"));
+                                //Refresco la lista
+                                this.getView().byId("listaEmpleados").getBinding("items").refresh();
+                                //Vacio la ventana de detalle
+                                this._split.to(this.createId("seleccioneEmpleado"));
+                            }.bind(this),
+                            error: function (e) {
+                                console.error(e);
+                            }.bind(this)
+                        });
+                    }
+                }.bind(this)
+            });
+        };
+
+        //**************************
+        // Funciones internas
+        //**************************
+
+        function _cerrarVentanaAscenso(){
+            this._dialogoAscenso.close();
+        };
+
+        //**************************
+        // Prototipado
+        //**************************
 
         return Controller.extend("emp_mgmt.management.controller.VisualizarEmpleado", {
             onInit: onInit,
@@ -177,7 +209,7 @@ sap.ui.define([
             onPreparacionCarga: onPreparacionCarga,
             onCargaFicheroFinalizada: onCargaFicheroFinalizada,
             onBorrarFichero: onBorrarFichero,
-            descargaFichero: descargaFichero
+            _cerrarVentanaAscenso: _cerrarVentanaAscenso
         });
 
     });

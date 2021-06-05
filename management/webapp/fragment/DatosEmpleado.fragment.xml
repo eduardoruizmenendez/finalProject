@@ -26,13 +26,10 @@
 				<Label text="{i18n>apellidos}"/>
 				<Text text="{/ApellidosEmpleado}"/>
 
-				<Label text="{= ${/TipoEmpleado} !== 1 ? '{i18n>dni}' : '{i18n>cif}' }"/>
-				<Text  text="{= ${/TipoEmpleado} !== 1 ? '{/DNIEmpleado}' : '{/CIFEmpleado}'}"/>
+				<Label text="{= ${/TipoEmpleado} !== 1 ? ${i18n>dni} : ${i18n>cif} }"/>
+				<Text  text="{= ${/TipoEmpleado} !== 1 ? ${/DNIEmpleado} : ${/CIFEmpleado} }"/>
 
-				<Label text="{i18n>salarioBrutoAnual}"
-                       visible="{= ${/TipoEmpleado} !== 1 ? true : false}"/>
-                <Label text="{i18n>precioDiario}"
-                       visible="{= ${/TipoEmpleado} === 1 ? true : false}"/>
+				<Label text="{= ${/TipoEmpleado} !== 1 ? ${i18n>salarioBrutoAnual} : ${i18n>precioDiario} }"/>
 				<Text  text="{/SalarioBruto}"/>
 
 				<Label text="{i18n>fechaIncorporacion}"/>

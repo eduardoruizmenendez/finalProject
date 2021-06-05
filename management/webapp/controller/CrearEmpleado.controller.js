@@ -129,7 +129,7 @@ sap.ui.define([
             onAnexosBeforeUploadStart: function (oEvent) {
                 let oHeaderSlug = new sap.m.UploadCollectionParameter({
                     name: "slug",
-                    value: this.getOwnerComponent().SapId + ";" + this.newUserId + ";" + oEvent.getParameter("fileName")
+                    value: this.getOwnerComponent().sapId + ";" + this.newUserId + ";" + oEvent.getParameter("fileName")
                 });
                 oEvent.getParameters().addHeaderParameter(oHeaderSlug);
             },
@@ -191,6 +191,7 @@ sap.ui.define([
                     "LastName": this.model.getProperty("/ApellidosEmpleado"),
                     "Dni": sDni,
                     "CreationDate": this.model.getProperty("/FechaIncorporacion"),
+                    "Comments": this.model.getProperty("/Comentario"),
                     "UserToSalary": [{
                         "Ammount": parseFloat(this.model.getProperty("/SalarioBruto")).toString(),
                         "Comments": this.model.getProperty("/Comentario"),
@@ -294,7 +295,7 @@ sap.ui.define([
                 this.model.setProperty("/SalarioMin", 0);
                 this.model.setProperty("/SalarioMax", 0);
                 this.model.setProperty("/SalarioBruto", 0);
-                this.model.setProperty("/FechaIncorporacion", new Date());
+                this.model.setProperty("/FechaIncorporacion", "");
                 this.model.setProperty("/Comentario", "");
                 this.model.setProperty("/AnexosInfo", []);
                 this.model.setProperty("/ContadorAnexos", 0);

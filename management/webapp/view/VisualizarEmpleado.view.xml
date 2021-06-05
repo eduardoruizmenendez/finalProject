@@ -11,10 +11,13 @@
 				<Toolbar>
 					<Button icon="sap-icon://nav-back" 
                             press="onVolver"/>
-					<SearchField liveChange="onBuscarEmpleado" 
-                                 width="100%" />
+					<SearchField  id="filtroApellido"
+                                  liveChange="onBuscarEmpleado" 
+                                  width="100%" 
+                                  placeholder="{i18n>filtroApellido}"/>
 				</Toolbar>
-				<List itemPress="onVisualizarEmpleado" 
+				<List id="listaEmpleados"
+                      itemPress="onVisualizarEmpleado" 
                       items="{path:'oData>/Users', filters:[{path:'SapId',operator:'EQ',value1:'vekterdrake@gmail.com'}]}">
 					<items>
 						<StandardListItem title="{oData>FirstName} {oData>LastName}" description="{oData>Dni}" type="Active"/>
